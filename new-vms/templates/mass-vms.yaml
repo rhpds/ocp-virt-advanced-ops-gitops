@@ -1,0 +1,390 @@
+{{- with .Values.new_vms.massVms }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .namespace }}
+  labels:
+    app: windows
+{{- if .cluster_monitoring_label }}
+{{ .cluster_monitoring_label | indent 4 }}
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+  namespace: {{ .namespace }}
+spec:
+  selector:
+    vm.kubevirt.io/name: database
+  ports:
+  - protocol: TCP
+    name: mysql
+    port: 3306
+    targetPort: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .route }}
+  namespace: {{ .namespace }}
+spec:
+  selector:
+    env: {{ .route }}
+  ports:
+  - protocol: TCP
+    name: http
+    port: 80
+    targetPort: 80
+{{- if .create_route }}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ .route }}
+  namespace: {{ .namespace }}
+spec:
+  host: {{ .route }}-{{ .namespace }}.{{ $.Values.deployer.domain }}
+  path: /
+  to:
+    kind: Service
+    name: {{ .route }}
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+{{- end }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: allow-clone-user-mass-vms
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: {{ .namespace }}
+roleRef:
+  kind: ClusterRole
+  name: datavolume-cloner
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: admin
+  namespace: {{ .namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: admin
+{{- $max_vms := ( add ( int .count ) 1 ) }}
+{{- range $vm_index := untilStep 1 ( int $max_vms ) 1 }}
+---
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+    argocd.argoproj.io/ignore-healthcheck: "true"
+    app.openshift.io/connects-to: '[{"apiVersion":"kubevirt.io/v1","kind":"VirtualMachine","name":"winweb02"},{"apiVersion":"kubevirt.io/v1","kind":"VirtualMachine","name":"winweb01"}]'
+  labels:
+    app: database
+    app.kubernetes.io/part-of: 3-Tier-App
+  name: database-{{ $vm_index }}
+  namespace: {{ $.Values.new_vms.massVms.namespace }}
+spec:
+  dataVolumeTemplates:
+  - apiVersion: cdi.kubevirt.io/v1beta1
+    kind: DataVolume
+    metadata:
+      name: database-{{ $vm_index }}
+    spec:
+      source:
+        snapshot:
+          name: database-volumesnapshot
+          namespace: default
+        # pvc:
+        #   name: database
+        #   namespace: default
+        # http:
+        #   url: {{ $.Values.vms_image_url }}/database.qcow2
+      storage:
+        resources:
+          requests:
+            storage: 16Gi
+  runStrategy: {{ $.Values.new_vms.massVms.runStrategy }}
+  template:
+    metadata:
+      annotations:
+        descheduler.alpha.kubernetes.io/evict: "true"
+        vm.kubevirt.io/flavor: small
+        vm.kubevirt.io/os: centos9
+        vm.kubevirt.io/workload: server
+      labels:
+        kubevirt.io/domain: database
+        kubevirt.io/size: small
+    spec:
+      domain:
+        cpu:
+          cores: 1
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: rootdisk
+          interfaces:
+          - masquerade: {}
+            model: virtio
+            name: default
+          networkInterfaceMultiqueue: true
+          rng: {}
+        features:
+          smm:
+            enabled: true
+        firmware:
+          bootloader:
+            bios: {}
+        machine:
+          type: {{ $.Values.new_vms.massVms.machineType }}
+        memory:
+          guest: 1Gi
+        resources:
+          requests:
+            memory: 1Gi
+      evictionStrategy: {{ $.Values.new_vms.massVms.evictionStrategy }}
+      networks:
+      - name: default
+        pod: {}
+      terminationGracePeriodSeconds: 0
+      volumes:
+      - dataVolume:
+          name: database-{{ $vm_index }}
+        name: rootdisk
+---
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+  labels:
+    app: winweb01
+    app.kubernetes.io/part-of: 3-Tier-App
+    vm.kubevirt.io/template.revision: '1'
+    vm.kubevirt.io/template.version: v0.25.0
+  name: winweb01-{{ $vm_index }}
+  namespace: {{ $.Values.new_vms.massVms.namespace }}
+spec:
+  dataVolumeTemplates:
+  - apiVersion: cdi.kubevirt.io/v1beta1
+    kind: DataVolume
+    metadata:
+      name: winweb01-{{ $vm_index }}
+    spec:
+      source:
+        snapshot:
+          name: winweb01-volumesnapshot
+          namespace: default
+        # pvc:
+        #   name: winweb01
+        #   namespace: default
+        # http:
+        #   url: {{ $.Values.vms_image_url }}/winweb01.qcow2
+      storage:
+        resources:
+          requests:
+            storage: 90Gi
+  runStrategy: {{ $.Values.new_vms.massVms.runStrategy }}
+  template:
+    metadata:
+      annotations:
+        descheduler.alpha.kubernetes.io/evict: "true"
+      labels:
+        env: {{ $.Values.new_vms.massVms.route }}
+    spec:
+      terminationGracePeriodSeconds: 0
+      domain:
+        clock:
+          timer:
+            hpet:
+              present: false
+            hyperv: {}
+            pit:
+              tickPolicy: delay
+            rtc:
+              tickPolicy: catchup
+          utc: {}
+        cpu:
+          cores: 1
+          sockets: 2
+          threads: 1
+        devices:
+          disks:
+          - disk:
+              bus: sata
+            name: rootdisk
+          inputs:
+          - bus: usb
+            name: tablet
+            type: tablet
+          interfaces:
+          - masquerade: {}
+            model: e1000e
+            name: default
+        features:
+          acpi: {}
+          apic: {}
+          hyperv:
+            frequencies: {}
+            ipi: {}
+            relaxed: {}
+            reset: {}
+            runtime: {}
+            spinlocks:
+              spinlocks: 8191
+            synic: {}
+            synictimer:
+              direct: {}
+            tlbflush: {}
+            vapic: {}
+            vpindex: {}
+          smm:
+            enabled: true
+        firmware:
+          bootloader:
+            efi: {}
+        machine:
+          type: {{ $.Values.new_vms.massVms.machineType }}
+        memory:
+          guest: 6Gi
+        resources:
+          requests:
+            memory: 6Gi
+      evictionStrategy: {{ $.Values.new_vms.massVms.evictionStrategy }}
+      networks:
+      - name: default
+        pod: {}
+      terminationGracePeriodSeconds: 0
+      volumes:
+      - dataVolume:
+          name: winweb01-{{ $vm_index }}
+        name: rootdisk
+---
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+  labels:
+    app: winweb02
+    app.kubernetes.io/part-of: 3-Tier-App
+    vm.kubevirt.io/template.revision: '1'
+    vm.kubevirt.io/template.version: v0.25.0
+  name: winweb02-{{ $vm_index }}
+  namespace: {{ $.Values.new_vms.massVms.namespace }}
+spec:
+  dataVolumeTemplates:
+  - apiVersion: cdi.kubevirt.io/v1beta1
+    kind: DataVolume
+    metadata:
+      name: winweb02-{{ $vm_index }}
+    spec:
+      source:
+        snapshot:
+          name: winweb02-volumesnapshot
+          namespace: default
+        # pvc:
+        #   name: winweb02
+        #   namespace: default
+        # http:
+        #   url: {{ $.Values.vms_image_url }}/winweb02.qcow2
+      storage:
+        resources:
+          requests:
+            storage: 90Gi
+  runStrategy: {{ $.Values.new_vms.massVms.runStrategy }}
+  template:
+    metadata:
+      annotations:
+        descheduler.alpha.kubernetes.io/evict: "true"
+      labels:
+        env: {{ $.Values.new_vms.massVms.route }}
+    spec:
+      domain:
+        clock:
+          timer:
+            hpet:
+              present: false
+            hyperv: {}
+            pit:
+              tickPolicy: delay
+            rtc:
+              tickPolicy: catchup
+          utc: {}
+        cpu:
+          cores: 1
+          sockets: 2
+          threads: 1
+        devices:
+          disks:
+          - disk:
+              bus: sata
+            name: rootdisk
+          inputs:
+          - bus: usb
+            name: tablet
+            type: tablet
+          interfaces:
+          - masquerade: {}
+            model: e1000e
+            name: default
+        features:
+          acpi: {}
+          apic: {}
+          hyperv:
+            frequencies: {}
+            ipi: {}
+            relaxed: {}
+            reset: {}
+            runtime: {}
+            spinlocks:
+              spinlocks: 8191
+            synic: {}
+            synictimer:
+              direct: {}
+            tlbflush: {}
+            vapic: {}
+            vpindex: {}
+          smm:
+            enabled: true
+        firmware:
+          bootloader:
+            efi: {}
+        machine:
+          type: {{ $.Values.new_vms.massVms.machineType }}
+        memory:
+          guest: 6Gi
+        resources:
+          requests:
+            memory: 6Gi
+      evictionStrategy: {{ $.Values.new_vms.massVms.evictionStrategy }}
+      networks:
+      - name: default
+        pod: {}
+      terminationGracePeriodSeconds: 0
+      volumes:
+      - dataVolume:
+          name: winweb02-{{ $vm_index }}
+        name: rootdisk
+{{- end }}
+{{- end }}

@@ -1,0 +1,50 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: node-taint-job
+  namespace: {{ .Values.nodetaint.namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: node-taint-job
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: node-taint-job
+  namespace: {{ .Values.nodetaint.namespace }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: node-taint-job
+  namespace: {{ .Values.nodetaint.namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: node-taint-job
+      containers:
+      - name: node-taint-patch
+        image: image-registry.openshift-image-registry.svc:5000/openshift/cli
+        command:
+        - /bin/sh
+        - -c
+        - |
+          NODE_NAME=$(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0].metadata.name}')
+
+          oc adm taint node $NODE_NAME key=virtualization:NoSchedule --overwrite=true
+          # oc adm taint node $NODE_NAME key=virtualization:NoExecute --overwrite=true

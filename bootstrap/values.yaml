@@ -1,0 +1,125 @@
+# Default values for bootstrap.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+user:
+  count: 0
+  prefix: user
+
+default:
+  git:
+    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    revision: main
+  namespace: default
+
+disable_kubeadmin: false
+
+vms_namespace: vms-aap-day2
+
+vms:
+- name: rhel9-vm1
+  namespace: vms-aap-day2
+  sshPublicKey: ssh-public-key-base64-string
+  nodeSelector: {}
+  tolerations: []
+- name: rhel9-vm2
+  namespace: vms-aap-day2
+  sshPublicKey: ssh-public-key-base64-string
+
+new_vms:
+  repoURL: https://github.com/rhpds/lb1969-virtday2-gitops.git
+  targetRevision: main
+  path: new-vms
+  namespace: default
+
+datavolumes:
+  repoURL: https://github.com/rhpds/lb1969-virtday2-gitops.git
+  targetRevision: main
+  path: datavolumesa
+  namespace: default
+  imageUrl: "http://s3.us-east.cloud-object-storage.appdomain.cloud/roadshowocpvirt"
+  volumes:
+  # - name: database
+  - object_name: demo-database-centos7-20250408.qcow2
+    volume_name: database
+    size: 16Gi
+    volumeSnapshotClassName: ocs-external-storagecluster-rbdplugin-snapclass
+  - object_name: demo-winweb01-w2k22-20250410.qcow2
+    volume_name: winweb01
+    size: 90Gi
+    volumeSnapshotClassName: ocs-external-storagecluster-rbdplugin-snapclass
+  - object_name: demo-winweb02-w2k22-20250410.qcow2
+    volume_name: winweb02
+    size: 90Gi
+    volumeSnapshotClassName: ocs-external-storagecluster-rbdplugin-snapclass
+
+loadmaker:
+  namespace: vms-aap-day2
+  route: vms
+  git:
+    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    revision: main
+    path: loadmaker
+
+webterminal:
+  repoURL: https://github.com/rhpds/ocp-cluster-addons
+  targetRevision: main
+  path: webterminal
+  namespace: default
+
+deployer:
+  domain: apps.cluster-guid.sandbox.opentlc.com
+  apiUrl: https://api.cluster-guid.sandbox.opentlc.com:6443
+
+workspace:
+  git:
+    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    revision: main
+    path: workspace
+
+cluster_observability_operator:
+  git:
+    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    revision: main
+    path: cluster-observability-operator
+  namespace: openshift-cluster-observability-operator
+
+cluster_observability_config:
+  git:
+    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    revision: main
+    path: cluster-observability-config
+  namespace: openshift-cluster-observability-operator
+
+kubevirt_config:
+  git:
+    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    revision: main
+    path: kubevirt-config
+  namespace: openshift-cnv
+
+network_observability_operator:
+  git:
+    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    revision: main
+    path: network-observability-operator
+
+netobserv:
+  namespace: netobserv
+  git:
+    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    revision: main
+    path: netobserv
+
+loki:
+  namespace: netobserv
+  git:
+    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    revision: main
+    path: loki-operator
+
+prom_exporter_configs:
+  git:
+    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    revision: main
+    path: prometheus-exporter-configs

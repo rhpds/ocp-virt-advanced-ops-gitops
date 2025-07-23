@@ -1,0 +1,20 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus-exporter-configs
+  namespace: openshift-gitops
+spec:
+  project: default
+  source:
+    repoURL: {{ .Values.prom_exporter_configs.git.url }}
+    targetRevision: {{ .Values.prom_exporter_configs.git.revision }}
+    path: {{ .Values.prom_exporter_configs.git.path }}
+    helm:
+      values: |
+        mykey: myvalue
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .Values.default.namespace }}
+  syncPolicy:
+    automated: {}

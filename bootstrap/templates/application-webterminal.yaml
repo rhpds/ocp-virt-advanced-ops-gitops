@@ -1,0 +1,20 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: webterminal
+  namespace: openshift-gitops
+spec:
+  project: default
+  source:
+    repoURL: {{ .Values.webterminal.repoURL }}
+    targetRevision: {{ .Values.webterminal.targetRevision }}
+    path: {{ .Values.webterminal.path }}
+    helm:
+      values: |
+        mykey: myvalue
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .Values.webterminal.namespace }}
+  syncPolicy:
+    automated: {}
