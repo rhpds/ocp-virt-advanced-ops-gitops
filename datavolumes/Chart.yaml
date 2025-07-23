@@ -1,5 +1,5 @@
 apiVersion: v2
-name: datavolumesa
+name: datavolumes
 description: Create DataVolumes on demand
 
 # A chart can be either an 'application' or a 'library' chart.
