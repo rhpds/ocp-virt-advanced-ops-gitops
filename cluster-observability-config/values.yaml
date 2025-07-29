@@ -12,7 +12,7 @@ deployer:
 
 cluster_observability_config:
   git:
-    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
     revision: main
     path: cluster-observability-config
   namespace: openshift-cluster-observability-operator

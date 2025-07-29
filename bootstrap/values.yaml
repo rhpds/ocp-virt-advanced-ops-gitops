@@ -8,7 +8,7 @@ user:
 
 default:
   git:
-    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
     revision: main
   namespace: default
 
@@ -27,13 +27,13 @@ vms:
   sshPublicKey: ssh-public-key-base64-string
 
 new_vms:
-  repoURL: https://github.com/rhpds/lb1969-virtday2-gitops.git
+  repoURL: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
   targetRevision: main
   path: new-vms
   namespace: default
 
 datavolumes:
-  repoURL: https://github.com/rhpds/lb1969-virtday2-gitops.git
+  repoURL: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
   targetRevision: main
   path: datavolumes
   namespace: default
@@ -57,7 +57,7 @@ loadmaker:
   namespace: vms-aap-day2
   route: vms
   git:
-    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
     revision: main
     path: loadmaker
 
@@ -73,53 +73,53 @@ deployer:
 
 workspace:
   git:
-    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
     revision: main
     path: workspace
 
 cluster_observability_operator:
   git:
-    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
     revision: main
     path: cluster-observability-operator
   namespace: openshift-cluster-observability-operator
 
 cluster_observability_config:
   git:
-    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
     revision: main
     path: cluster-observability-config
   namespace: openshift-cluster-observability-operator
 
 kubevirt_config:
   git:
-    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
     revision: main
     path: kubevirt-config
   namespace: openshift-cnv
 
 network_observability_operator:
   git:
-    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
     revision: main
     path: network-observability-operator
 
 netobserv:
   namespace: netobserv
   git:
-    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
     revision: main
     path: netobserv
 
 loki:
   namespace: netobserv
   git:
-    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
     revision: main
     path: loki-operator
 
 prom_exporter_configs:
   git:
-    url: https://github.com/rhpds/lb1969-virtday2-gitops.git
+    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
     revision: main
     path: prometheus-exporter-configs
