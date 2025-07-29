@@ -102,9 +102,9 @@ applications:
     destination:
       namespace: openshift-network-observability-operator
 
-  netobserv:
+  network_observability_config:
     source:
-      path: netobserv
+      path: network-observability-config
     destination:
       namespace: netobserv
 

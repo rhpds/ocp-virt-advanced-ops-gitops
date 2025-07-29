@@ -1,4 +1,4 @@
-{{- $app := index .Values.applications "netobserv" }}
+{{- $app := index .Values.applications "network_observability_config" }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
