@@ -5,3 +5,6 @@
 deployer:
   domain: REPLACEME-OPENSHIFT_DOMAIN
   apiUrl: https://api.cluster.opentlc.com:6443
+
+prometheus_exporter_configs:
+  namespace: webapp-vms

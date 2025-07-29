@@ -1,10 +1,11 @@
+{{- $app := index .Values "prometheus_exporter_configs" }}
 # Services
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: database-prometheus-exporter
-  namespace: windows-vms
+  namespace: {{ $app.namespace }}
 spec:
   selector:
     vm.kubevirt.io/name: database
@@ -18,7 +19,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: winweb01-prometheus-exporter
-  namespace: windows-vms
+  namespace: {{ $app.namespace }}
 spec:
   selector:
     vm.kubevirt.io/name: winweb01
@@ -32,7 +33,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: winweb02-prometheus-exporter
-  namespace: windows-vms
+  namespace: {{ $app.namespace }}
 spec:
   selector:
     vm.kubevirt.io/name: winweb02
@@ -47,7 +48,7 @@ kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
   name: database-prometheus-metrics
-  namespace: windows-vms
+  namespace: {{ $app.namespace }}
 spec:
   to:
     kind: Service
@@ -64,7 +65,7 @@ kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
   name: winweb01-prometheus-metrics
-  namespace: windows-vms
+  namespace: {{ $app.namespace }}
 spec:
   to:
     kind: Service
@@ -81,7 +82,7 @@ kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
   name: winweb02-prometheus-metrics
-  namespace: windows-vms
+  namespace: {{ $app.namespace }}
 spec:
   to:
     kind: Service
