@@ -1,3 +1,4 @@
+{{- $app := index .Values.applications "datavolumes" }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -6,10 +7,7 @@ metadata:
   namespace: openshift-gitops
 spec:
   project: default
-  source:
-    repoURL: {{ .Values.datavolumes.repoURL }}
-    targetRevision: {{ .Values.datavolumes.targetRevision }}
-    path: {{ .Values.datavolumes.path }}
+  {{- include "app.source" (dict "root" $ "app" $app) | nindent 2 }}
     helm:
       values: |
         user:
@@ -19,9 +17,9 @@ spec:
           domain: {{ .Values.deployer.domain }}
           apiUrl: {{ .Values.deployer.apiUrl }}
         datavolumes:
-          imageUrl: {{ .Values.datavolumes.imageUrl }}
+          imageUrl: {{ $app.imageUrl }}
           volumes:
-          {{- range .Values.datavolumes.volumes }}
+          {{- range $app.volumes }}
           - object_name: {{ .object_name }}
             volume_name: {{ .volume_name }}
             size: {{ .size }}
@@ -29,6 +27,6 @@ spec:
           {{- end }}
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: {{ $app.destination.namespace }}
   syncPolicy:
     automated: {}

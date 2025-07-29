@@ -1,3 +1,4 @@
+{{- $app := index .Values.applications "new_vms" }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -6,10 +7,7 @@ metadata:
   namespace: openshift-gitops
 spec:
   project: default
-  source:
-    repoURL: {{ .Values.new_vms.repoURL }}
-    targetRevision: {{ .Values.new_vms.targetRevision }}
-    path: {{ .Values.new_vms.path }}
+  {{- include "app.source" (dict "root" $ "app" $app) | nindent 2 }}
     helm:
       values: |
         user:
@@ -26,6 +24,6 @@ spec:
     - /spec/template/spec/containers
   destination:
     server: https://kubernetes.default.svc
-    namespace: {{ .Values.new_vms.namespace }}
+    namespace: {{ $app.destination.namespace }}
   syncPolicy:
     automated: {}

@@ -1,3 +1,4 @@
+{{- $app := index .Values.applications "kubevirt_config" }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -6,12 +7,9 @@ metadata:
   namespace: openshift-gitops
 spec:
   project: default
-  source:
-    repoURL: {{ .Values.kubevirt_config.git.url }}
-    targetRevision: {{ .Values.kubevirt_config.git.revision }}
-    path: {{ .Values.kubevirt_config.git.path }}
+  {{- include "app.source" (dict "root" $ "app" $app) | nindent 2 }}
   destination:
     server: https://kubernetes.default.svc
-    namespace: {{ .Values.kubevirt_config.namespace }}
+    namespace: {{ $app.destination.namespace }}
   syncPolicy:
     automated: {}

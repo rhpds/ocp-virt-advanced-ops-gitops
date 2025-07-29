@@ -18,17 +18,17 @@ new_vms:
   - name: winweb02
     size: 90Gi
   loadtest:
-    - namespace: windows-vms
-      route: windows-vms
+    - namespace: webapp-vms
+      route: webapp-vms
       requests_per_second: 2
     - namespace: mass-vms
       route: mass-vms
       requests_per_second: 2
-  windowsVms:
+  webappVms:
     count: 1
-    namespace: windows-vms
+    namespace: webapp-vms
     create_route: true
-    route: windows-vms
+    route: webapp
     runStrategy: "RerunOnFailure"
     evictionStrategy: "LiveMigrate"
     machineType: q35
@@ -37,7 +37,7 @@ new_vms:
     count: 10
     namespace: mass-vms
     create_route: true
-    route: mass-vms
+    route: mass
     runStrategy: "Manual"
     evictionStrategy: "LiveMigrate"
     machineType: q35

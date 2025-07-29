@@ -1,3 +1,4 @@
+{{- $app := index .Values.applications "loki" }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -6,13 +7,10 @@ metadata:
   namespace: openshift-gitops
 spec:
   project: default
-  source:
-    repoURL: {{ .Values.loki.git.url }}
-    targetRevision: {{ .Values.loki.git.revision }}
-    path: {{ .Values.loki.git.path }}
+  {{- include "app.source" (dict "root" $ "app" $app) | nindent 2 }}
   destination:
     server: https://kubernetes.default.svc
-    namespace: netobserv
+    namespace: {{ $app.destination.namespace }}
   syncPolicy:
     automated: {}
     syncOptions:

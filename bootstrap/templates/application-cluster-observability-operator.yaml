@@ -1,3 +1,4 @@
+{{- $app := index .Values.applications "cluster_observability_operator" }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -6,12 +7,9 @@ metadata:
   namespace: openshift-gitops
 spec:
   project: default
-  source:
-    repoURL: {{ .Values.cluster_observability_operator.git.url }}
-    targetRevision: {{ .Values.cluster_observability_operator.git.revision }}
-    path: {{ .Values.cluster_observability_operator.git.path }}
+  {{- include "app.source" (dict "root" $ "app" $app) | nindent 2 }}
   destination:
     server: https://kubernetes.default.svc
-    namespace: openshift-cluster-observability-operator
+    namespace: {{ $app.destination.namespace }}
   syncPolicy:
     automated: {}

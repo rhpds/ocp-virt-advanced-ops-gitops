@@ -2,15 +2,22 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+deployer:
+  domain: apps.cluster-guid.sandbox.opentlc.com
+  apiUrl: https://api.cluster-guid.sandbox.opentlc.com:6443
+
 user:
   count: 0
-  prefix: user
+  base: user
 
 default:
+  source:
+    repoURL: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
+    targetRevision: main
   git:
     url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
     revision: main
-  namespace: default
+  namespace: openshift-gitops
 
 disable_kubeadmin: false
 
@@ -26,100 +33,101 @@ vms:
   namespace: vms-aap-day2
   sshPublicKey: ssh-public-key-base64-string
 
-new_vms:
-  repoURL: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
-  targetRevision: main
-  path: new-vms
-  namespace: default
+applications:
+  new_vms:
+    source:
+      path: new-vms
+    destination:
+      namespace: default
 
-datavolumes:
-  repoURL: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
-  targetRevision: main
-  path: datavolumes
-  namespace: default
-  imageUrl: "http://s3.us-east.cloud-object-storage.appdomain.cloud/roadshowocpvirt"
-  volumes:
-  # - name: database
-  - object_name: demo-database-centos7-20250408.qcow2
-    volume_name: database
-    size: 16Gi
-    volumeSnapshotClassName: ocs-external-storagecluster-rbdplugin-snapclass
-  - object_name: demo-winweb01-w2k22-20250410.qcow2
-    volume_name: winweb01
-    size: 90Gi
-    volumeSnapshotClassName: ocs-external-storagecluster-rbdplugin-snapclass
-  - object_name: demo-winweb02-w2k22-20250410.qcow2
-    volume_name: winweb02
-    size: 90Gi
-    volumeSnapshotClassName: ocs-external-storagecluster-rbdplugin-snapclass
+  cluster_observability_config:
+    source:
+      path: cluster-observability-config
+    destination:
+      namespace: openshift-cluster-observability-operator
 
-loadmaker:
-  namespace: vms-aap-day2
-  route: vms
-  git:
-    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
-    revision: main
-    path: loadmaker
+  cluster_observability_operator:
+    source:
+      path: cluster-observability-operator
+    destination:
+      namespace: openshift-cluster-observability-operator
 
-webterminal:
-  repoURL: https://github.com/rhpds/ocp-cluster-addons
-  targetRevision: main
-  path: webterminal
-  namespace: default
+  datavolumes:
+    source:
+      path: datavolumes
+    destination:
+      namespace: default
+    imageUrl: "http://s3.us-east.cloud-object-storage.appdomain.cloud/roadshowocpvirt"
+    volumes:
+    # - name: database
+    - object_name: demo-database-centos7-20250408.qcow2
+      volume_name: database
+      size: 16Gi
+      volumeSnapshotClassName: ocs-external-storagecluster-rbdplugin-snapclass
+    - object_name: demo-winweb01-w2k22-20250410.qcow2
+      volume_name: winweb01
+      size: 90Gi
+      volumeSnapshotClassName: ocs-external-storagecluster-rbdplugin-snapclass
+    - object_name: demo-winweb02-w2k22-20250410.qcow2
+      volume_name: winweb02
+      size: 90Gi
+      volumeSnapshotClassName: ocs-external-storagecluster-rbdplugin-snapclass
 
-deployer:
-  domain: apps.cluster-guid.sandbox.opentlc.com
-  apiUrl: https://api.cluster-guid.sandbox.opentlc.com:6443
+  loadmaker:
+    source:
+      path: loadmaker
+    destination:
+      namespace: vms-aap-day2
+    deployment:
+      route: vms
+      namespace: vms-aap-day2
+
+  webterminal:
+    source:
+      repoURL: https://github.com/rhpds/ocp-cluster-addons
+      targetRevision: main
+      path: webterminal
+    destination:
+      namespace: default
+
+  kubevirt_config:
+    source:
+      path: kubevirt-config
+    destination:
+      namespace: openshift-cnv
+
+  network_observability_operator:
+    source:
+      path: network-observability-operator
+    destination:
+      namespace: openshift-network-observability-operator
+
+  netobserv:
+    source:
+      path: netobserv
+    destination:
+      namespace: netobserv
+
+  loki:
+    destination:
+      namespace: netobserv
+    source:
+      path: loki-operator
+
+  prom_exporter_configs:
+    source:
+      path: prometheus-exporter-configs
+    destination:
+      namespace: default
+
+  node_taint:
+    source:
+      path: node-taint
+    destination:
+      namespace: default
 
 workspace:
   git:
     url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
     revision: main
     path: workspace
-
-cluster_observability_operator:
-  git:
-    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
-    revision: main
-    path: cluster-observability-operator
-  namespace: openshift-cluster-observability-operator
-
-cluster_observability_config:
-  git:
-    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
-    revision: main
-    path: cluster-observability-config
-  namespace: openshift-cluster-observability-operator
-
-kubevirt_config:
-  git:
-    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
-    revision: main
-    path: kubevirt-config
-  namespace: openshift-cnv
-
-network_observability_operator:
-  git:
-    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
-    revision: main
-    path: network-observability-operator
-
-netobserv:
-  namespace: netobserv
-  git:
-    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
-    revision: main
-    path: netobserv
-
-loki:
-  namespace: netobserv
-  git:
-    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
-    revision: main
-    path: loki-operator
-
-prom_exporter_configs:
-  git:
-    url: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
-    revision: main
-    path: prometheus-exporter-configs

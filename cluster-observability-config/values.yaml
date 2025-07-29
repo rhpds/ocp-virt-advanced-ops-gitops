@@ -4,7 +4,7 @@
 
 user:
   count: 2
-  prefix: user
+  base: user
 
 deployer:
   domain: apps.cluster-guid.sandbox.opentlc.com

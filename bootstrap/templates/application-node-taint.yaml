@@ -1,17 +1,15 @@
+{{- $app := index .Values.applications "node_taint" }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: nodes
+  name: node-taint
   namespace: openshift-gitops
 spec:
   project: default
-  source:
-    repoURL: {{ .Values.default.git.url }}
-    targetRevision: {{ .Values.default.git.revision }}
-    path: nodes
+  {{- include "app.source" (dict "root" $ "app" $app) | nindent 2 }}
   destination:
     server: https://kubernetes.default.svc
-    namespace: {{ .Values.default.namespace }}
+    namespace: {{ $app.destination.namespace }}
   syncPolicy:
     automated: {}

@@ -8,6 +8,6 @@ deployer:
 
 ingressgatway_url_path: https://localhost
 
-loadvm:
+deployment:
   namespace: vms-aap-day2
   route: vms

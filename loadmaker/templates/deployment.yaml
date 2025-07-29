@@ -3,7 +3,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: loadmaker
-  namespace: {{ .Values.loadvm.namespace }}
+  namespace: {{ .Values.loadmaker.deployment.namespace }}
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 spec:
@@ -29,7 +29,7 @@ spec:
               value: '10000'
             - name: URL
               # value: 'http://istio-ingressgateway-istio-system.apps.virt-cluster.vew1.p1.openshiftapps.com'
-              value: 'https://{{ .Values.loadvm.route }}-{{ .Values.loadvm.namespace }}.{{ .Values.deployer.domain }}'
+              value: 'https://{{ .Values.loadmaker.deployment.route }}-{{ .Values.loadmaker.deployment.namespace }}.{{ .Values.deployer.domain }}'
           resources: {}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File

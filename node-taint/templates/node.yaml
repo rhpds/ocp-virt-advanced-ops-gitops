@@ -1,9 +1,10 @@
+{{- $app := index .Values.applications "node_taint" }}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: node-taint-job
-  namespace: {{ .Values.nodetaint.namespace }}
+  namespace: {{ $app.namespace }}
   annotations:
     argocd.argoproj.io/sync-wave: "1"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
@@ -22,13 +23,13 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: node-taint-job
-  namespace: {{ .Values.nodetaint.namespace }}
+  namespace: {{ $app.namespace }}
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: node-taint-job
-  namespace: {{ .Values.nodetaint.namespace }}
+  namespace: {{ $app.namespace }}
   annotations:
     argocd.argoproj.io/sync-wave: "1"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true

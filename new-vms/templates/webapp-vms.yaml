@@ -1,4 +1,4 @@
-{{- with .Values.new_vms.windowsVms }}
+{{- with .Values.new_vms.webappVms }}
 ---
 apiVersion: v1
 kind: Namespace
@@ -27,11 +27,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: windows-vms
+  name: webapp
   namespace: {{ .namespace }}
 spec:
   selector:
-    env: windows-vms
+    env: webapp
   ports:
   - protocol: TCP
     name: http
@@ -64,7 +64,7 @@ spec:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: allow-clone-user-windows-vms
+  name: allow-clone-user-webapp-vms
   namespace: default
 subjects:
 - kind: ServiceAccount
@@ -210,7 +210,7 @@ spec:
       annotations:
         descheduler.alpha.kubernetes.io/evict: "true"
       labels:
-        env: windows-vms
+        env: webapp
     spec:
       terminationGracePeriodSeconds: 0
       domain:
@@ -291,7 +291,7 @@ metadata:
     vm.kubevirt.io/template.revision: '1'
     vm.kubevirt.io/template.version: v0.25.0
   name: winweb02
-  namespace: windows-vms
+  namespace: {{ .namespace }}
 spec:
   dataVolumeTemplates:
   - apiVersion: cdi.kubevirt.io/v1beta1
@@ -318,7 +318,7 @@ spec:
       annotations:
         descheduler.alpha.kubernetes.io/evict: "true"
       labels:
-        env: windows-vms
+        env: webapp
     spec:
       domain:
         clock:

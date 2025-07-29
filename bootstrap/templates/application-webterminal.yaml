@@ -1,3 +1,4 @@
+{{- $app := index .Values.applications "webterminal" }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -6,15 +7,12 @@ metadata:
   namespace: openshift-gitops
 spec:
   project: default
-  source:
-    repoURL: {{ .Values.webterminal.repoURL }}
-    targetRevision: {{ .Values.webterminal.targetRevision }}
-    path: {{ .Values.webterminal.path }}
+  {{- include "app.source" (dict "root" $ "app" $app) | nindent 2 }}
     helm:
       values: |
         mykey: myvalue
   destination:
     server: https://kubernetes.default.svc
-    namespace: {{ .Values.webterminal.namespace }}
+    namespace: {{ $app.destination.namespace }}
   syncPolicy:
     automated: {}
