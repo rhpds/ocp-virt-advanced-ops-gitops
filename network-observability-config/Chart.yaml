@@ -1,6 +1,6 @@
 apiVersion: v2
-name: netobserv
-description: A Helm chart for Kubernetes
+name: network-observability-config
+description: Creates lokistack and joins with netobserv operator
 
 # A chart can be either an 'application' or a 'library' chart.
 #

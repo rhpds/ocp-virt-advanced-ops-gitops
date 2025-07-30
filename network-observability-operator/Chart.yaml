@@ -1,6 +1,6 @@
 apiVersion: v2
 name: network-observability-operator
-description: A Helm chart for Kubernetes
+description: Installs Network Observability Operator with Prom and Loki
 
 # A chart can be either an 'application' or a 'library' chart.
 #
