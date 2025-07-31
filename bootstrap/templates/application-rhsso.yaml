@@ -23,7 +23,8 @@ spec:
             admin: true
             realm: rhdp
         oauth:
-          issuer: https://keycloak-rhsso.apps.cluster-guid.guid.sandbox.opentlc.com/auth/realms/rhdp
+          # issuer: https://keycloak-rhsso.apps.cluster-guid.guid.sandbox.opentlc.com/auth/realms/rhdp
+          issuer: https://keycloak-rhsso.{{ .Values.deployer.domain }}/auth/realms/rhdp
         helper-status-checker:
           approver: true
           checks:
