@@ -1,4 +1,4 @@
-# nodes - taint the first compute node
+# nodes - taint the first TWO compute nodes
 
 This repository contains a Helm chart
 
