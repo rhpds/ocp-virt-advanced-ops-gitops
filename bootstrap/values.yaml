@@ -34,6 +34,13 @@ vms:
   sshPublicKey: ssh-public-key-base64-string
 
 applications:
+  rhacm_config:
+    enabled: true
+    source:
+      path: rhacm-config
+    destination:
+      namespace: default
+
   new_vms:
     source:
       path: new-vms

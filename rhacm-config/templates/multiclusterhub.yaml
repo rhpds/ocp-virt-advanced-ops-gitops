@@ -7,12 +7,4 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "2"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-    # installer.open-cluster-management.io/default-storage-class: {{ .Values.advancedClusterManagement.storageClassName }}
 spec: []
-  # disableHubSelfManagement: {{ .Values.advancedClusterManagement.disableHubSelfManagement | default false }}
-  # overrides:
-  #   components:
-  #     - configOverrides: {}
-  #       enabled: true
-  #       name: edge-manager-preview
-  #
