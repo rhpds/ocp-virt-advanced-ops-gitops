@@ -11,6 +11,7 @@ user:
   base: user
 
 default:
+  environment: prod
   source:
     repoURL: https://github.com/rhpds/ocp-virt-advanced-ops-gitops.git
     targetRevision: main
@@ -22,6 +23,9 @@ default:
 disable_kubeadmin: false
 
 vms_namespace: vms-aap-day2
+
+# prod = participants big cluster
+# hub  = shared rhacm cluster where they log in to adopt their prod environment
 
 vms:
 - name: rhel9-vm1
@@ -35,7 +39,7 @@ vms:
 
 applications:
   rhacm_config:
-    enabled: true
+    environment: hub
     source:
       path: rhacm-config
     destination:
