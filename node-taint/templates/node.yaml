@@ -45,7 +45,8 @@ spec:
         - /bin/sh
         - -c
         - |
-          NODE_NAME=$(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0].metadata.name}')
+          NODE_NAMES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0:2].metadata.name}'))
 
-          oc adm taint node $NODE_NAME key=virtualization:NoSchedule --overwrite=true
-          # oc adm taint node $NODE_NAME key=virtualization:NoExecute --overwrite=true
+          for NODE_NAME in "${NODE_NAMES[@]}"; do
+            oc adm taint node $NODE_NAME key=virtualization:NoSchedule --overwrite=true
+          done
