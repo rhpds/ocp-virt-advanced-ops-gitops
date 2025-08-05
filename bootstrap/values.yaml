@@ -38,12 +38,12 @@ vms:
   sshPublicKey: ssh-public-key-base64-string
 
 applications:
-  rhacm_config:
-    environment: hub
+
+  descheduler:
     source:
-      path: rhacm-config
+      path: descheduler
     destination:
-      namespace: default
+      namespace: cluster-kube-descheduler-operator
 
   new_vms:
     source:
