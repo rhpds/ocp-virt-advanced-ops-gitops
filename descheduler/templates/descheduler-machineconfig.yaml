@@ -21,7 +21,7 @@ apiVersion: machineconfiguration.openshift.io/v1
 kind: MachineConfig
 metadata:
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "-2"
   labels:
     machineconfiguration.openshift.io/role: worker
   name: 99-openshift-machineconfig-worker-psi-karg
