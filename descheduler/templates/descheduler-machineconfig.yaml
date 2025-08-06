@@ -10,7 +10,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "1"
 spec:
   channel: stable
-  installPlanApproval: Manual
+  installPlanApproval: Automatic
   name: cluster-kube-descheduler-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
