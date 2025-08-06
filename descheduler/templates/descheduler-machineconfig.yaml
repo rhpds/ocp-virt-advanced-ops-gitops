@@ -4,17 +4,15 @@ kind: Subscription
 metadata:
   labels:
     operators.coreos.com/cluster-kube-descheduler-operator.openshift-kube-descheduler-op: ''
-  name: kube-descheduler-operator
+  name: cluster-kube-descheduler-operator
   namespace: openshift-kube-descheduler-operator
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
   channel: stable
   installPlanApproval: Automatic
-  name: kube-descheduler-operator
+  name: cluster-kube-descheduler-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  # startingCSV: clusterkubedescheduleroperator.v5.1.3
+  startingCSV: clusterkubedescheduleroperator.v5.1.3
 ---
 # On all worker nodes
 apiVersion: machineconfiguration.openshift.io/v1
