@@ -4,6 +4,8 @@ kind: Subscription
 metadata:
   labels:
     operators.coreos.com/cluster-kube-descheduler-operator.openshift-kube-descheduler-op: ''
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   name: cluster-kube-descheduler-operator
   namespace: openshift-kube-descheduler-operator
 spec:
@@ -27,22 +29,22 @@ spec:
   kernelArguments:
     - psi=1
 ---
-apiVersion: operator.openshift.io/v1
-kind: KubeDescheduler
-metadata:
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-    argocd.argoproj.io/sync-wave: "3"
-  name: cluster
-  namespace: openshift-kube-descheduler-operator
-spec:
-  managementState: Managed
-  deschedulingIntervalSeconds: 30
-  mode: "Automatic"
-  profiles:
-    - DevKubeVirtRelieveAndMigrate
-  profileCustomizations:
-    devEnableSoftTainter: true
-    devEnableEvictionsInBackground: true
-    devDeviationThresholds: AsymmetricLow
-    devActualUtilizationProfile: PrometheusCPUCombined
+# apiVersion: operator.openshift.io/v1
+# kind: KubeDescheduler
+# metadata:
+#   annotations:
+#     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+#     argocd.argoproj.io/sync-wave: "3"
+#   name: cluster
+#   namespace: openshift-kube-descheduler-operator
+# spec:
+#   managementState: Managed
+#   deschedulingIntervalSeconds: 30
+#   mode: "Automatic"
+#   profiles:
+#     - DevKubeVirtRelieveAndMigrate
+#   profileCustomizations:
+#     devEnableSoftTainter: true
+#     devEnableEvictionsInBackground: true
+#     devDeviationThresholds: AsymmetricLow
+#     devActualUtilizationProfile: PrometheusCPUCombined
