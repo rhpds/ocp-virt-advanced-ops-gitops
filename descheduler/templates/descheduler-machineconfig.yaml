@@ -14,7 +14,7 @@ spec:
   name: cluster-kube-descheduler-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: clusterkubedescheduleroperator.v5.1.3
+  #startingCSV: clusterkubedescheduleroperator.v5.1.3
 ---
 # On all worker nodes
 apiVersion: machineconfiguration.openshift.io/v1
