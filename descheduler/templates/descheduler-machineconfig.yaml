@@ -1,9 +1,4 @@
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: cluster-kube-descheduler-operator
----
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
@@ -11,6 +6,8 @@ metadata:
     operators.coreos.com/cluster-kube-descheduler-operator.openshift-kube-descheduler-op: ''
   name: cluster-kube-descheduler-operator
   namespace: openshift-kube-descheduler-operator
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   channel: stable
   installPlanApproval: Manual
@@ -23,6 +20,8 @@ spec:
 apiVersion: machineconfiguration.openshift.io/v1
 kind: MachineConfig
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     machineconfiguration.openshift.io/role: worker
   name: 99-openshift-machineconfig-worker-psi-karg
@@ -33,6 +32,9 @@ spec:
 apiVersion: operator.openshift.io/v1
 kind: KubeDescheduler
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: "3"
   name: cluster
   namespace: openshift-kube-descheduler-operator
 spec:
