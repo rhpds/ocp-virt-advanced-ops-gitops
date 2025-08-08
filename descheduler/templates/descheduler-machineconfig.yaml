@@ -33,8 +33,8 @@ apiVersion: operator.openshift.io/v1
 kind: KubeDescheduler
 metadata:
   annotations:
+    argocd.argoproj.io/sync-wave: "4"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-    argocd.argoproj.io/sync-wave: "3"
   name: cluster
   namespace: openshift-kube-descheduler-operator
 spec:
