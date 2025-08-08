@@ -19,10 +19,10 @@ new_vms:
     size: 90Gi
   loadtest:
     - namespace: webapp-vms
-      route: webapp-vms
+      route: webapp
       requests_per_second: 2
     - namespace: mass-vms
-      route: mass-vms
+      route: mass
       requests_per_second: 2
   webappVms:
     count: 1
