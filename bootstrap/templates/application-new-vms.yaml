@@ -17,6 +17,10 @@ spec:
           domain: {{ .Values.deployer.domain }}
           apiUrl: {{ .Values.deployer.apiUrl }}
   ignoreDifferences:
+  - group: "kubevirt.io"
+    kind: "VirtualMachine"
+    jsonPointers:
+    - /spec/template/spec/domain/cpu
   - group: "apps"
     kind: "Deployment"
     jsonPointers:
