@@ -1,0 +1,43 @@
+apiVersion: poolboy.gpte.redhat.com/v1
+kind: ResourcePool
+metadata:
+  annotations:
+    babylon.gpte.redhat.com/description: 3 masters, 3 workers
+  finalizers:
+    - poolboy.gpte.redhat.com
+  name: openshift-cnv.ocp-virt-advanced-ops.dev
+  namespace: poolboy
+spec:
+  deleteUnhealthyResourceHandles: true
+  lifespan:
+    default: 2d
+    maximum: 180d
+    relativeMaximum: 30d
+    unclaimed: 7d
+  maxUnready: 5
+  minAvailable: 2
+  resources:
+    - name: openshift-cnv.ocp-virt-advanced-ops.dev
+      provider:
+        apiVersion: poolboy.gpte.redhat.com/v1
+        kind: ResourceProvider
+        name: openshift-cnv.ocp-virt-advanced-ops.dev
+        namespace: poolboy
+      template:
+        spec:
+          vars:
+            default_desired_state: stopped
+            job_vars:
+              ai_workers_memory: 32Gi
+    - name: openshift-cnv.ocp-virt-advanced-ops-hub.dev
+      provider:
+        apiVersion: poolboy.gpte.redhat.com/v1
+        kind: ResourceProvider
+        name: openshift-cnv.ocp-virt-advanced-ops-hub.dev
+        namespace: poolboy
+      template:
+        spec:
+          vars:
+            default_desired_state: stopped
+            job_vars:
+              ai_workers_memory: 32Gi
