@@ -6,3 +6,5 @@ metadata:
   namespace: openshift-kube-descheduler-operator
 spec:
   upgradeStrategy: Default
+  targetNamespaces:
+    - openshift-kube-descheduler-operator
