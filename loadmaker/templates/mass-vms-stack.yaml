@@ -57,7 +57,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: loadmaker-{{ $vm_index }}
-  namespace: {{ $vmset.namespace }}-{{ $vm_index }}
+  namespace: {{ $vmset.namespace }}
   annotations:
     argocd.argoproj.io/sync-wave: "5"
 spec:
