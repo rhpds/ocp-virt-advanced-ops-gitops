@@ -11,8 +11,7 @@ metadata:
   namespace: {{ $vmset.namespace }}
 spec:
   selector:
-    # vm.kubevirt.io/name: database-{{ $vm_index }}
-    app: database-{{ $vm_index }}
+    vm.kubevirt.io/name: database-{{ $vm_index }}
   ports:
   - protocol: TCP
     name: mysql
