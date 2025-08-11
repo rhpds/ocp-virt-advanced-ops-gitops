@@ -95,7 +95,7 @@ spec:
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: loadmaker
+  name: loadmaker-{{ $vm_index }}
   namespace: {{ $vmset.namespace }}-{{ $vm_index }}
   annotations:
     argocd.argoproj.io/sync-wave: "5"
