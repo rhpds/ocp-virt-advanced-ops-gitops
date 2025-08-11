@@ -1,4 +1,4 @@
-{{- range .Values.new_vms.loadtest }}
+{{- range .Values.new_vms.webappVms.loadtest }}
 ---
 kind: Deployment
 apiVersion: apps/v1

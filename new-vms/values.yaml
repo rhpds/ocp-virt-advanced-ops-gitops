@@ -17,13 +17,6 @@ new_vms:
     size: 90Gi
   - name: winweb02
     size: 90Gi
-  loadtest:
-    - namespace: webapp-vms
-      route: webapp
-      requests_per_second: 2
-    - namespace: mass-vms
-      route: mass
-      requests_per_second: 2
   webappVms:
     count: 1
     namespace: webapp-vms
@@ -33,6 +26,10 @@ new_vms:
     evictionStrategy: "LiveMigrate"
     machineType: q35
     cluster_monitoring_label: "monitoring.rhobs: coo-stack" # empty disabled
+    loadtest:
+    - namespace: webapp-vms
+      route: webapp
+      requests_per_second: 2
   massVms:
     count: 10
     namespace: mass-vms
@@ -42,3 +39,7 @@ new_vms:
     evictionStrategy: "LiveMigrate"
     machineType: q35
     cluster_monitoring_label: "" # empty disabled
+    loadtest:
+    - namespace: mass-vms
+      route: mass
+      requests_per_second: 2
