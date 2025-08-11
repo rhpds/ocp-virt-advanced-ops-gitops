@@ -130,6 +130,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "4"
   labels:
+    env: {{ $vmset.route }}-{{ $vm_index }}
     app: winweb01-{{ $vm_index }}
     app.kubernetes.io/part-of: 3-Tier-App
     vm.kubevirt.io/template.revision: '1'
@@ -162,7 +163,7 @@ spec:
       annotations:
         descheduler.alpha.kubernetes.io/evict: "true"
       labels:
-        env: {{ $vmset.route }}
+        env: {{ $vmset.route }}-{{ $vm_index }}
     spec:
       terminationGracePeriodSeconds: 0
       domain:
@@ -238,6 +239,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "4"
   labels:
+    env: {{ $vmset.route }}-{{ $vm_index }}
     app: winweb02-{{ $vm_index }}
     app.kubernetes.io/part-of: 3-Tier-App
     vm.kubevirt.io/template.revision: '1'
