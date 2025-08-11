@@ -269,7 +269,7 @@ spec:
       annotations:
         descheduler.alpha.kubernetes.io/evict: "true"
       labels:
-        env: {{ $vmset.route }}
+        env: {{ $vmset.route }}-{{ $vm_index }}
     spec:
       domain:
         clock:
