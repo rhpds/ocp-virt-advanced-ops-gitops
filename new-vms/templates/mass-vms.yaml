@@ -103,11 +103,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: loadtest
+      app: loadtest-{{ $vm_index }}
   template:
     metadata:
       labels:
-        app: loadtest
+        app: loadtest-{{ $vm_index }}
     spec:
       containers:
         - name: container
