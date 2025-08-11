@@ -5,7 +5,7 @@ kind: Namespace
 metadata:
   name: {{ $vmset.namespace }}
   labels:
-    app: windows
+    app: mass-vms
 {{- if $vmset.cluster_monitoring_label }}
 {{ $vmset.cluster_monitoring_label | indent 4 }}
 {{- end }}
@@ -49,8 +49,8 @@ metadata:
     argocd.argoproj.io/sync-wave: "4"
     argocd.argoproj.io/ignore-healthcheck: "true"
   labels:
-    app: database
-    app.kubernetes.io/part-of: 3-Tier-App
+    app: database-{{ $vm_index }}
+    app.kubernetes.io/.of: 3-Tier-App
   name: database-{{ $vm_index }}
   namespace: {{ $vmset.namespace }}
 spec:
@@ -82,7 +82,7 @@ spec:
         vm.kubevirt.io/os: centos9
         vm.kubevirt.io/workload: server
       labels:
-        kubevirt.io/domain: database
+        kubevirt.io/domain: database-{{ $vm_index }}
         kubevirt.io/size: small
     spec:
       domain:
@@ -130,7 +130,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "4"
   labels:
-    app: winweb01
+    app: winweb01-{{ $vm_index }}
     app.kubernetes.io/part-of: 3-Tier-App
     vm.kubevirt.io/template.revision: '1'
     vm.kubevirt.io/template.version: v0.25.0
@@ -238,7 +238,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "4"
   labels:
-    app: winweb02
+    app: winweb02-{{ $vm_index }}
     app.kubernetes.io/part-of: 3-Tier-App
     vm.kubevirt.io/template.revision: '1'
     vm.kubevirt.io/template.version: v0.25.0
