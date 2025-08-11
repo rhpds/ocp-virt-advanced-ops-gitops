@@ -27,7 +27,7 @@ new_vms:
     machineType: q35
     cluster_monitoring_label: "monitoring.rhobs: coo-stack" # empty disabled
     loadtest:
-    - namespace: webapp-vms
+      namespace: webapp-vms
       route: webapp
       requests_per_second: 2
   massVms:
@@ -40,6 +40,6 @@ new_vms:
     machineType: q35
     cluster_monitoring_label: "" # empty disabled
     loadtest:
-    - namespace: mass-vms
+      namespace: mass-vms
       route: mass
       requests_per_second: 2
