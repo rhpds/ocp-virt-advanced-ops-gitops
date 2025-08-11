@@ -13,8 +13,6 @@ spec:
   mode: "Automatic"
   profiles:
   - DevKubeVirtRelieveAndMigrate
-  - AffinityAndTaints
-  - LifecycleAndUtilization
   profileCustomizations:
     devEnableSoftTainter: true
     devEnableEvictionsInBackground: true
