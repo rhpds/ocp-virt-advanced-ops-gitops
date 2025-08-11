@@ -50,7 +50,6 @@ metadata:
     argocd.argoproj.io/ignore-healthcheck: "true"
   labels:
     app: database-{{ $vm_index }}
-    app.kubernetes.io/.of: 3-Tier-App
   name: database-{{ $vm_index }}
   namespace: {{ $vmset.namespace }}
 spec:
@@ -132,7 +131,6 @@ metadata:
   labels:
     env: {{ $vmset.route }}-{{ $vm_index }}
     app: winweb01-{{ $vm_index }}
-    app.kubernetes.io/part-of: 3-Tier-App
     vm.kubevirt.io/template.revision: '1'
     vm.kubevirt.io/template.version: v0.25.0
   name: winweb01-{{ $vm_index }}
@@ -241,7 +239,6 @@ metadata:
   labels:
     env: {{ $vmset.route }}-{{ $vm_index }}
     app: winweb02-{{ $vm_index }}
-    app.kubernetes.io/part-of: 3-Tier-App
     vm.kubevirt.io/template.revision: '1'
     vm.kubevirt.io/template.version: v0.25.0
   name: winweb02-{{ $vm_index }}
