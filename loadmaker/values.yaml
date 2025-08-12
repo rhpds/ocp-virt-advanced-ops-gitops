@@ -35,7 +35,7 @@ new_vms:
     loadtest:
       namespace: mass-vms
       route: mass
-      requests_per_second: 1000
+      requests_per_second: 200
 
 applications:
   loadmaker:
