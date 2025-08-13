@@ -24,7 +24,7 @@ new_vms:
       route: webapp
       requests_per_second: 2
   massVms:
-    count: 10
+    count: 12
     namespace: mass-vms
     create_route: true
     route: mass
