@@ -38,7 +38,7 @@ subjects:
   kind: User
   name: admin
 # loop over the number of VMs
-# to create VMs and loadmakers
+# to create VMs
 {{- $max_vms := ( add ( int $vmset.count ) 1 ) }}
 {{- range $vm_index := untilStep 1 ( int $max_vms ) 1 }}
 ---

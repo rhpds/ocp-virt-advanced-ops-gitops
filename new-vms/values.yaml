@@ -39,7 +39,3 @@ new_vms:
     evictionStrategy: "LiveMigrate"
     machineType: q35
     cluster_monitoring_label: "" # empty disabled
-    loadtest:
-      namespace: mass-vms
-      route: mass
-      requests_per_second: 2
