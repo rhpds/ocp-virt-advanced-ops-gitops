@@ -60,6 +60,8 @@ metadata:
   namespace: {{ $vmset.namespace }}
   annotations:
     argocd.argoproj.io/sync-wave: "5"
+  labels:
+    app: loadmaker-mass-vms
 spec:
   replicas: 1
   selector:
