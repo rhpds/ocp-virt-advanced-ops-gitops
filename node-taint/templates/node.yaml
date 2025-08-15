@@ -6,7 +6,7 @@ metadata:
   name: node-taint-job
   namespace: {{ $app.namespace }}
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "-1"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -14,7 +14,7 @@ kind: ClusterRoleBinding
 metadata:
   name: node-taint-job
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "-1"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -31,7 +31,7 @@ metadata:
   name: node-taint-job
   namespace: {{ $app.namespace }}
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "-1"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   template:
@@ -45,8 +45,26 @@ spec:
         - /bin/sh
         - -c
         - |
-          NODE_NAMES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0:2].metadata.name}'))
+          # taint against VMs
+          NODE_NAMES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0:4].metadata.name}'))
 
           for NODE_NAME in "${NODE_NAMES[@]}"; do
             oc adm taint node $NODE_NAME key=virtualization:NoSchedule --overwrite=true
           done
+
+          # label for infra nodes
+          INFRANODES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0:2].metadata.name}'))
+          for NODE_NAME in "${INFRANODES[@]}"; do
+            # label infra nodes
+            oc label node $NODE_NAME node-role.kubernetes.io/infra=
+            oc label node $NODE_NAME node-role.kubernetes.io=infra
+          done
+
+          # taint infra nodes
+          oc adm taint nodes -l node-role.kubernetes.io/infra node-role.kubernetes.io/infra=reserved:NoSchedule node-role.kubernetes.io/infra=reserved:NoExecute
+
+          # reconfigure the default ingress controller
+          oc patch ingresscontroller/default -n  openshift-ingress-operator  --type=merge -p '{"spec":{"nodePlacement": {"nodeSelector": {"matchLabels": {"node-role.kubernetes.io/infra": ""}},"tolerations": [{"effect":"NoSchedule","key": "node-role.kubernetes.io/infra","value": "reserved"},{"effect":"NoExecute","key": "node-role.kubernetes.io/infra","value": "reserved"}]}}}'
+
+          # move the registry to the infra nodes
+          oc patch configs.imageregistry.operator.openshift.io/cluster --type=merge -p '{"spec":{"nodeSelector": {"node-role.kubernetes.io/infra": ""},"tolerations": [{"effect":"NoSchedule","key": "node-role.kubernetes.io/infra","value": "reserved"},{"effect":"NoExecute","key": "node-role.kubernetes.io/infra","value": "reserved"}]}}'
