@@ -39,6 +39,13 @@ vms:
 
 applications:
 
+  udn:
+    enabled: true
+    source:
+      path: udn
+    destination:
+      namespace: default
+
   descheduler:
     source:
       path: descheduler
