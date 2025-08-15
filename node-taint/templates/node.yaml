@@ -46,14 +46,14 @@ spec:
         - -c
         - |
           # taint against VMs
-          NODE_NAMES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0:4].metadata.name}'))
+          NODE_NAMES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[2:4].metadata.name}' --sort-by=.metadata.name))
 
           for NODE_NAME in "${NODE_NAMES[@]}"; do
             oc adm taint node $NODE_NAME key=virtualization:NoSchedule --overwrite=true
           done
 
           # label for infra nodes
-          INFRANODES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0:2].metadata.name}'))
+          INFRANODES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
           for NODE_NAME in "${INFRANODES[@]}"; do
             # label infra nodes
             oc label node $NODE_NAME node-role.kubernetes.io/infra=
@@ -64,6 +64,7 @@ spec:
           oc adm taint nodes -l node-role.kubernetes.io/infra node-role.kubernetes.io/infra=reserved:NoSchedule node-role.kubernetes.io/infra=reserved:NoExecute
 
           # reconfigure the default ingress controller
+          oc patch ingresscontroller/default -n openshift-ingress-operator --type=merge -p '{"spec":{"replicas": 2}}'
           oc patch ingresscontroller/default -n  openshift-ingress-operator  --type=merge -p '{"spec":{"nodePlacement": {"nodeSelector": {"matchLabels": {"node-role.kubernetes.io/infra": ""}},"tolerations": [{"effect":"NoSchedule","key": "node-role.kubernetes.io/infra","value": "reserved"},{"effect":"NoExecute","key": "node-role.kubernetes.io/infra","value": "reserved"}]}}}'
 
           # move the registry to the infra nodes
