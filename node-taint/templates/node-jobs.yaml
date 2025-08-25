@@ -47,7 +47,7 @@ spec:
         - |
           # label for infra nodes
           echo "# label for infra nodes"
-          INFRANODES=($(oc get nodes -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
+          INFRANODES=($(oc get nodes -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name | grep worker))
           for NODE_NAME in "${INFRANODES[@]}"; do
             # label infra nodes
             echo "node: $NODE_NAME"
@@ -69,6 +69,7 @@ spec:
           echo "# taint against VMs"
           NODE_NAMES=($(oc get nodes -l node-role.kubernetes.io/infra -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
           for NODE_NAME in "${NODE_NAMES[@]}"; do
+            echo "#  oc label node $NODE_NAME kubevirt.io/schedulable-"
             oc label node $NODE_NAME kubevirt.io/schedulable-
           done
           echo
