@@ -72,19 +72,20 @@ spec:
           # label for vmhost nodes (regular worker nodes)
           echo "######################"
           echo "# label for vmhost nodes"
+          echo "######################"
           VMHOST_NODES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[2:].metadata.name}' --sort-by=.metadata.name))
           for NODE_NAME in "${VMHOST_NODES[@]}"; do
             # label vmhost nodes
-            echo "######################"
             echo "node: $NODE_NAME"
             oc label node $NODE_NAME vmhost=true
           done
 
           # taint against VMs
+          echo "######################"
           echo "# taint against VMs"
+          echo "######################"
           NODE_NAMES=($(oc get nodes -l node-role.kubernetes.io/infra -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
           for NODE_NAME in "${NODE_NAMES[@]}"; do
-            echo "######################"
             echo "node: $NODE_NAME"
             echo "#  oc label node $NODE_NAME kubevirt.io/schedulable-"
             oc label node $NODE_NAME kubevirt.io/schedulable-
@@ -92,11 +93,14 @@ spec:
           echo
 
           # taint as infra nodes
+          echo "######################"
           echo "# taint infra nodes"
+          echo "######################"
           oc adm taint nodes -l node-role.kubernetes.io/infra node-role.kubernetes.io/infra=reserved:NoSchedule node-role.kubernetes.io/infra=reserved:NoExecute
           echo
 
           # reconfigure the default ingress controller
+          echo "######################"
           echo "# reconfigure the default ingress controller"
           # remove need for worker node-role
           echo "# remove need for worker node-role"
@@ -110,6 +114,7 @@ spec:
           echo
 
           # fix noobaa
+          echo "######################"
           echo "# fix noobaa configmap - new configmap rook-ceph-operator-config"
           oc delete configmap rook-ceph-operator-config -n openshift-storage
           cat <<EOF | oc apply -f -
@@ -135,5 +140,6 @@ spec:
           # oc delete -n openshift-storage pod rook-ceph-operator-5446f9b95b
 
           # move the registry to the infra nodes
+          echo "######################"
           echo "# move the registry to the infra nodes"
           oc patch configs.imageregistry.operator.openshift.io/cluster --type=merge -p '{"spec":{"nodeSelector": {"node-role.kubernetes.io/infra": ""},"tolerations": [{"effect":"NoSchedule","key": "node-role.kubernetes.io/infra","value": "reserved"},{"effect":"NoExecute","key": "node-role.kubernetes.io/infra","value": "reserved"}]}}'
