@@ -45,10 +45,19 @@ spec:
         - /bin/sh
         - -c
         - |
+          # quit if there are already infra nodes
+          NODES=($(oc get nodes -l node-role.kubernetes.io=infra,node-role.kubernetes.io/infra='' --sort-by=.metadata.name -o jsonpath='{.items[*].metadata.name}'))
+
+          if [ "${#NODES[@]}" -gt "0" ]; then
+            printf "%s\n" "${NODES[@]}"
+            echo "BAD, theres already infra nodes, dont run this job"
+            exit 1
+          fi
+
           # label for infra nodes
           echo "# label for infra nodes"
-          INFRANODES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
-          for NODE_NAME in "${INFRANODES[@]}"; do
+          WORKERNODES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
+          for NODE_NAME in "${WORKERNODES[@]}"; do
             # label infra nodes
             echo "######################"
             echo "node: $NODE_NAME"
