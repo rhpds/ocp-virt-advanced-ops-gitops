@@ -50,7 +50,9 @@ spec:
 
           if [ "${#NODES[@]}" -gt "0" ]; then
             printf "%s\n" "${NODES[@]}"
+            echo
             echo "BAD, theres already infra nodes, dont run this job"
+            echo
             exit 1
           fi
 
