@@ -59,6 +59,7 @@ spec:
             oc label node $NODE_NAME node-role.kubernetes.io=-
             oc label node $NODE_NAME node-role.kubernetes.io/infra=
             oc label node $NODE_NAME node-role.kubernetes.io=infra
+            oc label node $NODE_NAME vmhost=false
           done
 
           # taint against VMs
@@ -66,6 +67,8 @@ spec:
 
           for NODE_NAME in "${NODE_NAMES[@]}"; do
             oc adm taint node $NODE_NAME key=virtualization:NoSchedule --overwrite=true
+            oc label node kubevirt.io/schedulable=-
+            oc label node kubevirt.io/schedulable=false
           done
 
           # taint infra nodes

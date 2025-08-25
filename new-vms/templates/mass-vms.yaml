@@ -84,6 +84,8 @@ spec:
         kubevirt.io/domain: database-{{ $vm_index }}
         kubevirt.io/size: small
     spec:
+      nodeSelector:
+        vmhost: true
       domain:
         cpu:
           cores: 1
@@ -163,6 +165,8 @@ spec:
       labels:
         env: {{ $vmset.route }}-{{ $vm_index }}
     spec:
+      nodeSelector:
+        vmhost: true
       terminationGracePeriodSeconds: 0
       domain:
         clock:
@@ -271,6 +275,8 @@ spec:
       labels:
         env: {{ $vmset.route }}-{{ $vm_index }}
     spec:
+      nodeSelector:
+        vmhost: true
       domain:
         clock:
           timer:
