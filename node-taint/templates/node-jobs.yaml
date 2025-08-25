@@ -50,6 +50,7 @@ spec:
           INFRANODES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
           for NODE_NAME in "${INFRANODES[@]}"; do
             # label infra nodes
+            echo "######################"
             echo "node: $NODE_NAME"
             oc label node $NODE_NAME node-role.kubernetes.io-
             oc label node $NODE_NAME node-role.kubernetes.io/worker-
@@ -58,10 +59,13 @@ spec:
           done
 
           # label for vmhost nodes (regular worker nodes)
+          echo "######################"
           echo "# label for vmhost nodes"
           VMHOST_NODES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[2:].metadata.name}' --sort-by=.metadata.name))
           for NODE_NAME in "${VMHOST_NODES[@]}"; do
             # label vmhost nodes
+            echo "######################"
+            echo "node: $NODE_NAME"
             oc label node $NODE_NAME vmhost=true
           done
 
@@ -69,6 +73,8 @@ spec:
           echo "# taint against VMs"
           NODE_NAMES=($(oc get nodes -l node-role.kubernetes.io/infra -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
           for NODE_NAME in "${NODE_NAMES[@]}"; do
+            echo "######################"
+            echo "node: $NODE_NAME"
             echo "#  oc label node $NODE_NAME kubevirt.io/schedulable-"
             oc label node $NODE_NAME kubevirt.io/schedulable-
           done
