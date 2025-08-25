@@ -56,7 +56,8 @@ spec:
           INFRANODES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
           for NODE_NAME in "${INFRANODES[@]}"; do
             # label infra nodes
-            oc label node $NODE_NAME node-role.kubernetes.io=-
+            oc label node $NODE_NAME node-role.kubernetes.io-
+            oc label node $NODE_NAME node-role.kubernetes.io/worker-
             oc label node $NODE_NAME node-role.kubernetes.io/infra=
             oc label node $NODE_NAME node-role.kubernetes.io=infra
             oc label node $NODE_NAME vmhost=false
@@ -64,19 +65,41 @@ spec:
 
           # taint against VMs
           NODE_NAMES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
-
           for NODE_NAME in "${NODE_NAMES[@]}"; do
-            oc adm taint node $NODE_NAME key=virtualization:NoSchedule --overwrite=true
-            oc label node kubevirt.io/schedulable=-
-            oc label node kubevirt.io/schedulable=false
+            oc label node $NODE_NAME kubevirt.io/schedulable-
           done
 
           # taint infra nodes
           oc adm taint nodes -l node-role.kubernetes.io/infra node-role.kubernetes.io/infra=reserved:NoSchedule node-role.kubernetes.io/infra=reserved:NoExecute
 
           # reconfigure the default ingress controller
-          oc patch ingresscontroller/default -n openshift-ingress-operator --type=merge -p '{"spec":{"replicas": 2}}'
+          # remove need for worker node-role
           oc patch ingresscontroller/default -n  openshift-ingress-operator  --type=merge -p '{"spec":{"nodePlacement": {"nodeSelector": {"matchLabels": {"node-role.kubernetes.io/infra": ""}},"tolerations": [{"effect":"NoSchedule","key": "node-role.kubernetes.io/infra","value": "reserved"},{"effect":"NoExecute","key": "node-role.kubernetes.io/infra","value": "reserved"}]}}}'
+          # add infra node role
+          oc patch ingresscontroller/default -n openshift-ingress-operator --type=merge -p '{"spec":{"nodePlacement":{"nodeSelector":{"matchLabels": {"node-role.kubernetes.io/worker": null }}}}}'
+          # two replicas
+          oc patch ingresscontroller/default -n openshift-ingress-operator --type=merge -p '{"spec":{"replicas": 2}}'
+
+          # fix noobaa
+
+          oc delete configmap rook-ceph-operator-config -n openshift-storage
+          cat <<EOF | oc apply -f -
+          kind: ConfigMap
+          apiVersion: v1
+          metadata:
+            name: rook-ceph-operator-config
+            namespace: openshift-storage
+          data:
+            CSI_PLUGIN_TOLERATIONS: |-
+              - key: node-role.kubernetes.io/infra
+                operator: Equal
+                value: "reserved"
+                effect: NoSchedule
+              - key: node-role.kubernetes.io/infra
+                operator: Equal
+                value: "reserved"
+                effect: NoExecute
+          EOF
 
           # move the registry to the infra nodes - but don't because the infra-nodes don't have the storage necessary
           oc patch configs.imageregistry.operator.openshift.io/cluster --type=merge -p '{"spec":{"nodeSelector": {"node-role.kubernetes.io/infra": ""},"tolerations": [{"effect":"NoSchedule","key": "node-role.kubernetes.io/infra","value": "reserved"},{"effect":"NoExecute","key": "node-role.kubernetes.io/infra","value": "reserved"}]}}'
