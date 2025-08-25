@@ -45,24 +45,25 @@ spec:
         - /bin/sh
         - -c
         - |
-          # label for vmhost nodes
-          echo "# label for vmhost nodes"
-          VMHOST_NODES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[2:].metadata.name}' --sort-by=.metadata.name))
-          for NODE_NAME in "${VMHOST_NODES[@]}"; do
-            # label vmhost nodes
-            oc label node $NODE_NAME vmhost=true
-          done
-
           # label for infra nodes
           echo "# label for infra nodes"
-          INFRANODES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
+          INFRANODES=($(oc get nodes -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
           for NODE_NAME in "${INFRANODES[@]}"; do
             # label infra nodes
+            echo "node: $NODE_NAME"
             oc label node $NODE_NAME node-role.kubernetes.io-
             oc label node $NODE_NAME node-role.kubernetes.io/worker-
             oc label node $NODE_NAME node-role.kubernetes.io/infra=
             oc label node $NODE_NAME node-role.kubernetes.io=infra
             oc label node $NODE_NAME vmhost=false
+          done
+
+          # label for vmhost nodes (regular worker nodes)
+          echo "# label for vmhost nodes"
+          VMHOST_NODES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[2:].metadata.name}' --sort-by=.metadata.name))
+          for NODE_NAME in "${VMHOST_NODES[@]}"; do
+            # label vmhost nodes
+            oc label node $NODE_NAME vmhost=true
           done
 
           # taint against VMs
