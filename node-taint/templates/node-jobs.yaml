@@ -53,19 +53,20 @@ spec:
           done
 
           # label for infra nodes
-          # INFRANODES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
-          # for NODE_NAME in "${INFRANODES[@]}"; do
-          #   # label infra nodes
-          #   oc label node $NODE_NAME node-role.kubernetes.io/infra=
-          #   oc label node $NODE_NAME node-role.kubernetes.io=infra
-          # done
+          INFRANODES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
+          for NODE_NAME in "${INFRANODES[@]}"; do
+            # label infra nodes
+            oc label node $NODE_NAME node-role.kubernetes.io=-
+            oc label node $NODE_NAME node-role.kubernetes.io/infra=
+            oc label node $NODE_NAME node-role.kubernetes.io=infra
+          done
 
           # taint infra nodes
-          #oc adm taint nodes -l node-role.kubernetes.io/infra node-role.kubernetes.io/infra=reserved:NoSchedule node-role.kubernetes.io/infra=reserved:NoExecute
+          oc adm taint nodes -l node-role.kubernetes.io/infra node-role.kubernetes.io/infra=reserved:NoSchedule node-role.kubernetes.io/infra=reserved:NoExecute
 
           # reconfigure the default ingress controller
-          #oc patch ingresscontroller/default -n openshift-ingress-operator --type=merge -p '{"spec":{"replicas": 2}}'
-          #oc patch ingresscontroller/default -n  openshift-ingress-operator  --type=merge -p '{"spec":{"nodePlacement": {"nodeSelector": {"matchLabels": {"node-role.kubernetes.io/infra": ""}},"tolerations": [{"effect":"NoSchedule","key": "node-role.kubernetes.io/infra","value": "reserved"},{"effect":"NoExecute","key": "node-role.kubernetes.io/infra","value": "reserved"}]}}}'
+          oc patch ingresscontroller/default -n openshift-ingress-operator --type=merge -p '{"spec":{"replicas": 2}}'
+          oc patch ingresscontroller/default -n  openshift-ingress-operator  --type=merge -p '{"spec":{"nodePlacement": {"nodeSelector": {"matchLabels": {"node-role.kubernetes.io/infra": ""}},"tolerations": [{"effect":"NoSchedule","key": "node-role.kubernetes.io/infra","value": "reserved"},{"effect":"NoExecute","key": "node-role.kubernetes.io/infra","value": "reserved"}]}}}'
 
           # move the registry to the infra nodes - but don't because the infra-nodes don't have the storage necessary
-          #oc patch configs.imageregistry.operator.openshift.io/cluster --type=merge -p '{"spec":{"nodeSelector": {"node-role.kubernetes.io/infra": ""},"tolerations": [{"effect":"NoSchedule","key": "node-role.kubernetes.io/infra","value": "reserved"},{"effect":"NoExecute","key": "node-role.kubernetes.io/infra","value": "reserved"}]}}'
+          oc patch configs.imageregistry.operator.openshift.io/cluster --type=merge -p '{"spec":{"nodeSelector": {"node-role.kubernetes.io/infra": ""},"tolerations": [{"effect":"NoSchedule","key": "node-role.kubernetes.io/infra","value": "reserved"},{"effect":"NoExecute","key": "node-role.kubernetes.io/infra","value": "reserved"}]}}'
