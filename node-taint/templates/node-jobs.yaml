@@ -55,7 +55,6 @@ spec:
             oc label node $NODE_NAME node-role.kubernetes.io/worker-
             oc label node $NODE_NAME node-role.kubernetes.io/infra=
             oc label node $NODE_NAME node-role.kubernetes.io=infra
-            oc label node $NODE_NAME vmhost=false
           done
 
           # label for vmhost nodes (regular worker nodes)
@@ -68,13 +67,13 @@ spec:
 
           # taint against VMs
           echo "# taint against VMs"
-          NODE_NAMES=($(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
+          NODE_NAMES=($(oc get nodes -l node-role.kubernetes.io/infra -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
           for NODE_NAME in "${NODE_NAMES[@]}"; do
             oc label node $NODE_NAME kubevirt.io/schedulable-
           done
           echo
 
-          # taint infra nodes
+          # taint as infra nodes
           echo "# taint infra nodes"
           oc adm taint nodes -l node-role.kubernetes.io/infra node-role.kubernetes.io/infra=reserved:NoSchedule node-role.kubernetes.io/infra=reserved:NoExecute
           echo
@@ -113,6 +112,6 @@ spec:
                 effect: NoExecute
           EOF
 
-          # move the registry to the infra nodes - but don't because the infra-nodes don't have the storage necessary
+          # move the registry to the infra nodes
           echo "# move the registry to the infra nodes - but don't because the infra-nodes don't have the storage necessary"
           oc patch configs.imageregistry.operator.openshift.io/cluster --type=merge -p '{"spec":{"nodeSelector": {"node-role.kubernetes.io/infra": ""},"tolerations": [{"effect":"NoSchedule","key": "node-role.kubernetes.io/infra","value": "reserved"},{"effect":"NoExecute","key": "node-role.kubernetes.io/infra","value": "reserved"}]}}'
