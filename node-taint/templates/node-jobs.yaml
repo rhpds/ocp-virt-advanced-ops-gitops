@@ -92,11 +92,12 @@ spec:
           done
           echo
 
-          # remove VM scheduling from last worker node
+          #  taint last two worker nodes
           echo "######################"
-          echo "# remove VM scheduling from last two worker nodes"
+          echo "# taint last two worker nodes"
           echo "######################"
-          oc label node $(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[-2].metadata.name}') kubevirt.io/schedulable-
+          oc adm taint node $(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[-2:].metadata.name}') key=virtualization:NoSchedule
+          #oc label node $(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[-2:].metadata.name}') kubevirt.io/schedulable-
 
           # taint as infra nodes
           echo "######################"
@@ -143,7 +144,7 @@ spec:
 
           # maybe delete rook operator pods to bump the movement of the infranodes.
           # but will have to find the name of the rook operator pod
-          # oc delete -n openshift-storage pod rook-ceph-operator-5446f9b95b
+          oc delete -n openshift-storage pod rook-ceph-operator-5446f9b95b
 
           # move the registry to the infra nodes
           echo "######################"
