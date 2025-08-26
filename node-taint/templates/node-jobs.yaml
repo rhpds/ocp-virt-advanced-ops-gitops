@@ -80,7 +80,7 @@ spec:
             oc label node $NODE_NAME vmhost=true
           done
 
-          # remove VM scheduling
+          # remove VM scheduling from infra nodes
           echo "######################"
           echo "# remove VM scheduling"
           echo "######################"
@@ -91,6 +91,12 @@ spec:
             oc label node $NODE_NAME kubevirt.io/schedulable-
           done
           echo
+
+          # remove VM scheduling from last worker node
+          echo "######################"
+          echo "# remove VM scheduling from last two worker nodes"
+          echo "######################"
+          oc label node $(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[-2].metadata.name}') kubevirt.io/schedulable-
 
           # taint as infra nodes
           echo "######################"
