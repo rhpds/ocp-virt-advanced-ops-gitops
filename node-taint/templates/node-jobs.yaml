@@ -80,24 +80,23 @@ spec:
             oc label node $NODE_NAME vmhost=true
           done
 
-          # remove VM scheduling from infra nodes
-          echo "######################"
-          echo "# remove VM scheduling"
-          echo "######################"
-          NODE_NAMES=($(oc get nodes -l node-role.kubernetes.io/infra -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
-          for NODE_NAME in "${NODE_NAMES[@]}"; do
-            echo "node: $NODE_NAME"
-            echo "#  oc label node $NODE_NAME kubevirt.io/schedulable-"
-            oc label node $NODE_NAME kubevirt.io/schedulable-
-          done
-          echo
+          # # remove VM scheduling from infra nodes
+          # echo "######################"
+          # echo "# remove VM scheduling"
+          # echo "######################"
+          # NODE_NAMES=($(oc get nodes -l node-role.kubernetes.io/infra -o jsonpath='{.items[0:2].metadata.name}' --sort-by=.metadata.name))
+          # for NODE_NAME in "${NODE_NAMES[@]}"; do
+          #   echo "node: $NODE_NAME"
+          #   echo "#  oc label node $NODE_NAME kubevirt.io/schedulable-"
+          #   oc label node $NODE_NAME kubevirt.io/schedulable-
+          # done
+          # echo
 
           #  taint last two worker nodes
           echo "######################"
           echo "# taint last two worker nodes"
           echo "######################"
           oc adm taint node $(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[-2:].metadata.name}') key=virtualization:NoSchedule
-          #oc label node $(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[-2:].metadata.name}') kubevirt.io/schedulable-
 
           # taint as infra nodes
           echo "######################"
