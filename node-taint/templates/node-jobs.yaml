@@ -131,12 +131,8 @@ spec:
           EOF
           # maybe delete rook operator pods to bump the movement of the infranodes.
           # but will have to find the name of the rook operator pod
-          oc delete -n openshift-storage pod rook-ceph-operator-5446f9b95b
-
-          echo "######################"
-          echo "# move the registry to the infra nodes"
-          echo "######################"
-          oc patch configs.imageregistry.operator.openshift.io/cluster --type=merge -p '{"spec":{"nodeSelector": {"node-role.kubernetes.io/infra": ""},"tolerations": [{"effect":"NoSchedule","key": "node-role.kubernetes.io/infra","value": "reserved"},{"effect":"NoExecute","key": "node-role.kubernetes.io/infra","value": "reserved"}]}}'
+          # oc delete -n openshift-storage pod rook-ceph-operator-5446f9b95b
+          oc delete -n openshift-storage pod -l app=rook-ceph-operator
 
           # # label for vmhost nodes (regular worker nodes)
           # echo "######################"
