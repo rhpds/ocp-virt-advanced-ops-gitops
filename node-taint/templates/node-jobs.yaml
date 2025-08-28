@@ -76,7 +76,6 @@ spec:
             echo "######################"
             oc adm taint nodes -l node-role.kubernetes.io/infra node-role.kubernetes.io/infra=reserved:NoSchedule node-role.kubernetes.io/infra=reserved:NoExecute
             echo
-            exit 0
           fi
 
           echo "######################"
