@@ -95,17 +95,6 @@ spec:
           echo "# move the registry to the infra nodes"
           echo "######################"
           oc patch configs.imageregistry.operator.openshift.io/cluster --type=merge -p '{"spec":{"nodeSelector": {"node-role.kubernetes.io/infra": ""},"tolerations": [{"effect":"NoSchedule","key": "node-role.kubernetes.io/infra","value": "reserved"},{"effect":"NoExecute","key": "node-role.kubernetes.io/infra","value": "reserved"}]}}'
-          echo "# reconfigure the default ingress controller"
-          # remove need for worker node-role
-          echo "# remove need for worker node-role"
-          oc patch ingresscontroller/default -n  openshift-ingress-operator  --type=merge -p '{"spec":{"nodePlacement": {"nodeSelector": {"matchLabels": {"node-role.kubernetes.io/infra": ""}},"tolerations": [{"effect":"NoSchedule","key": "node-role.kubernetes.io/infra","value": "reserved"},{"effect":"NoExecute","key": "node-role.kubernetes.io/infra","value": "reserved"}]}}}'
-          # add infra node role
-          echo "# add infra node role"
-          oc patch ingresscontroller/default -n openshift-ingress-operator --type=merge -p '{"spec":{"nodePlacement":{"nodeSelector":{"matchLabels": {"node-role.kubernetes.io/worker": null }}}}}'
-          # two replicas
-          echo "# two replicas"
-          oc patch ingresscontroller/default -n openshift-ingress-operator --type=merge -p '{"spec":{"replicas": 2}}'
-          echo
 
           echo "######################"
           echo "# fix noobaa configmap - new configmap rook-ceph-operator-config"
