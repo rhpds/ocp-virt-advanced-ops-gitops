@@ -116,6 +116,10 @@ spec:
                 operator: Equal
                 value: "reserved"
                 effect: NoExecute
+              - key: key
+                operator: Equal
+                value: "virtualization"
+                effect: NoSchedule
           EOF
           # maybe delete rook operator pods to bump the movement of the infranodes.
           # but will have to find the name of the rook operator pod
