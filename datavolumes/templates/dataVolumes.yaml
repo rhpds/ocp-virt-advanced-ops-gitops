@@ -16,7 +16,7 @@ spec:
     resources:
       requests:
         storage: {{ .size }}
-  preallocation: true
+  # preallocation: true
 ---
 apiVersion: snapshot.storage.k8s.io/v1
 kind: VolumeSnapshot
