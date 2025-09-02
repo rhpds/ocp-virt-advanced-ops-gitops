@@ -96,6 +96,36 @@ spec:
           echo "######################"
           oc patch configs.imageregistry.operator.openshift.io/cluster --type=merge -p '{"spec":{"nodeSelector": {"node-role.kubernetes.io/infra": ""},"tolerations": [{"effect":"NoSchedule","key": "node-role.kubernetes.io/infra","value": "reserved"},{"effect":"NoExecute","key": "node-role.kubernetes.io/infra","value": "reserved"}]}}'
 
+          echo "######################"
+          echo "# fix noobaa configmap - new configmap rook-ceph-operator-config"
+          echo "######################"
+          oc delete configmap rook-ceph-operator-config -n openshift-storage
+          cat <<EOF | oc apply -f -
+          kind: ConfigMap
+          apiVersion: v1
+          metadata:
+            name: rook-ceph-operator-config
+            namespace: openshift-storage
+          data:
+            CSI_PLUGIN_TOLERATIONS: |-
+              - key: node-role.kubernetes.io/infra
+                operator: Equal
+                value: "reserved"
+                effect: NoSchedule
+              - key: node-role.kubernetes.io/infra
+                operator: Equal
+                value: "reserved"
+                effect: NoExecute
+              - key: key
+                operator: Equal
+                value: "virtualization"
+                effect: NoSchedule
+          EOF
+          # maybe delete rook operator pods to bump the movement of the infranodes.
+          # but will have to find the name of the rook operator pod
+          # oc delete -n openshift-storage pod rook-ceph-operator-5446f9b95b
+          oc delete -n openshift-storage pod -l app=rook-ceph-operator
+
           # # label for vmhost nodes (regular worker nodes)
           # echo "######################"
           # echo "# label for vmhost nodes"
