@@ -97,9 +97,11 @@ spec:
           oc patch configs.imageregistry.operator.openshift.io/cluster --type=merge -p '{"spec":{"nodeSelector": {"node-role.kubernetes.io/infra": ""},"tolerations": [{"effect":"NoSchedule","key": "node-role.kubernetes.io/infra","value": "reserved"},{"effect":"NoExecute","key": "node-role.kubernetes.io/infra","value": "reserved"}]}}'
 
           echo "######################"
-          echo "# fix noobaa configmap - new configmap rook-ceph-operator-config"
+          echo "# fix ceph-operator-config configmap"
           echo "######################"
-          oc delete configmap rook-ceph-operator-config -n openshift-storage
+          # If I delete first sometimes there's race conditions.
+          # oc delete configmap rook-ceph-operator-config -n openshift-storage
+          echo "oc apply to fix ceph-operator-config configmap"
           cat <<EOF | oc apply -f -
           kind: ConfigMap
           apiVersion: v1
