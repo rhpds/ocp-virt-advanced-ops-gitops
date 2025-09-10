@@ -6,7 +6,7 @@ metadata:
   name: node-taint-job
   namespace: {{ $app.namespace }}
   annotations:
-    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-wave: "-2"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -14,7 +14,7 @@ kind: ClusterRoleBinding
 metadata:
   name: node-taint-job
   annotations:
-    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-wave: "-2"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -31,7 +31,7 @@ metadata:
   name: node-taint-job
   namespace: {{ $app.namespace }}
   annotations:
-    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-wave: "-2"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   template:
@@ -123,10 +123,9 @@ spec:
                 value: "virtualization"
                 effect: NoSchedule
           EOF
-          # maybe delete rook operator pods to bump the movement of the infranodes.
+          # delete rook operator pods to bump the movement of the infranodes.
           # but will have to find the name of the rook operator pod
-          # oc delete -n openshift-storage pod rook-ceph-operator-5446f9b95b
-          oc delete -n openshift-storage pod -l app=rook-ceph-operator
+          # oc delete -n openshift-storage pod -l app=rook-ceph-operator
 
           # # label for vmhost nodes (regular worker nodes)
           # echo "######################"
