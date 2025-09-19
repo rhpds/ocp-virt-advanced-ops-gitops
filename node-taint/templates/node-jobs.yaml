@@ -125,7 +125,7 @@ spec:
           EOF
           # delete rook operator pods to bump the movement of the infranodes.
           # but will have to find the name of the rook operator pod
-          # oc delete -n openshift-storage pod -l app=rook-ceph-operator
+          oc delete -n openshift-storage pod -l app=rook-ceph-operator
 
           # # label for vmhost nodes (regular worker nodes)
           # echo "######################"
