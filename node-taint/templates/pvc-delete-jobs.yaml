@@ -46,6 +46,6 @@ spec:
         - -c
         - |
           echo "######################"
-          echo "# delete pvc in namespace default to clean restart the datavolumes import
+          echo "# delete pvc in namespace default to clean restart the datavolumes import"
           echo "######################"
           oc delete pvc --all -n default
